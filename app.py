@@ -1,4 +1,3 @@
-import player
 from flask import Flask, render_template, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -35,12 +34,12 @@ def index():
                 return render_template("game-interface.html", player=player)
             except:
                 return 'There was an issue creating the player'
-
-    current_player = Player.query.first()
-    if current_player is None:
-        return render_template("create-character.html")
     else:
-        return render_template("game-interface.html", player=current_player)
+        current_player = Player.query.first()
+        if current_player is None:
+            return render_template("create-character.html")
+        else:
+            return render_template("game-interface.html", player=current_player)
 
 if __name__ == "__main__":
     app.run(debug=True)
