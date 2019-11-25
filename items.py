@@ -59,4 +59,4 @@ def GetItem(item_type, item_id):
             elif item_type == "Consumable":
                 effect = row[3]
                 amount = row[4]
-                return Weapon(name, description, effect, amount)
+                return Consumable(name, description, value, effect, amount)

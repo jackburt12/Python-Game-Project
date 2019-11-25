@@ -75,7 +75,9 @@ def load_inventory():
     armour = 0
 
     for item in items_parsed:
+        print(type(item))
         if isinstance(item, Weapon):
+            print(item.damage)
             if int(item.damage) > int(damage):
                 damage = item.damage
         elif isinstance(item, Armour):
