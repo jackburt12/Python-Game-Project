@@ -6,45 +6,57 @@
 {% endblock %}
 
 {% block body %}
-  <h1>Python Pals</h1>
-  <br><br>
-  <table id="statistics">
-    <tr>
-      <th>{{player.name}}</th>
-      <th></th>
-    </tr>
-    <tr>
-      <td>Health</td>
-      <td class="col_r">{{player.health}}</td>
-    </tr>
-    <tr>
-      <td>Hunger</td>
-      <td class="col_r">{{player.hunger}}</td>
-    </tr>
-    <tr>
-      <td>Energy</td>
-      <td class="col_r">{{player.energy}}</td>
-    </tr>
-    <tr>
-      <td><img src="https://img.icons8.com/metro/26/000000/sword.png"> {{items.damage}}</td>
-      <td class="col_r"><img src="https://img.icons8.com/metro/26/000000/shield.png"> {{items.armour}}</td>
-    </tr>
-  </table>
+  <div id="game-container">
+    <h1>Python Pals</h1>
+    <br><br>
+    <div id="game-window">
+      <div class="panel" id="commentary"></div>
+      <div class="panel" id="actions"></div>
+      <div class="panel" id="player">
+        <table id="statistics">
+          <tr>
+            <th>{{player.name}}</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>Health</td>
+            <td class="col_r">{{player.health}}</td>
+          </tr>
+          <tr>
+            <td>Hunger</td>
+            <td class="col_r">{{player.hunger}}</td>
+          </tr>
+          <tr>
+            <td>Energy</td>
+            <td class="col_r">{{player.energy}}</td>
+          </tr>
+          <tr>
+            <td><img src="https://img.icons8.com/metro/26/000000/sword.png"> {{items.damage}}</td>
+            <td class="col_r"><img src="https://img.icons8.com/metro/26/000000/shield.png"> {{items.armour}}</td>
+          </tr>
+        </table>
 
-  <table id="inventory">
-      <tr>
-        <th>Inventory<th>
-        <th></th>
-      </tr>
-      {% for item in items.items %}
-        <tr>
-          <td class="item-name">{{ item.name }}</td>
-          <td class="item-quantity">{{ item.quantity }} </td>
-        </tr>
-      {% endfor %}
-  </table>
+        <table id="inventory">
+            <tr>
+              <th>Inventory<th>
+              <th></th>
+            </tr>
+            {% for item in items.items %}
+              <tr>
+                <td class="item-name">{{ item.name }}</td>
+                <td class="item-quantity">{{ item.quantity }} </td>
+              </tr>
+            {% endfor %}
+        </table>
 
-  <form action="/" method="POST">
-    <input type="submit" name="new_game" value="New Game">
-  </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer">
+    <form id="new-game-button" action="/" method="POST">
+      <input type="submit" name="new_game" value="New Game">
+    </form>
+  </div>
+
 {% endblock %}
