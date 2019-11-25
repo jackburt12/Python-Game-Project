@@ -2,11 +2,47 @@
 
 {% block head %}
   <title>Game</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/game.css') }}">
 {% endblock %}
 
 {% block body %}
   <h1>Python Pals</h1>
-  <h2>Hello {{player.name}}</h2>
+  <br><br>
+  <table id="statistics">
+    <tr>
+      <th>{{player.name}}</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td>Health</td>
+      <td class="col_r">{{player.health}}</td>
+    </tr>
+    <tr>
+      <td>Hunger</td>
+      <td class="col_r">{{player.hunger}}</td>
+    </tr>
+    <tr>
+      <td>Energy</td>
+      <td class="col_r">{{player.energy}}</td>
+    </tr>
+    <tr>
+      <td><img src="https://img.icons8.com/metro/26/000000/sword.png"> 0</td>
+      <td class="col_r"><img src="https://img.icons8.com/metro/26/000000/shield.png"> 0</td>
+    </tr>
+  </table>
+
+  <table id="inventory">
+      <tr>
+        <th>Inventory<th>
+        <th></th>
+      </tr>
+      {% for item in items %}
+        <tr>
+          <td class="item-name">{{ item.name }}</td>
+          <td class="item-quantity">{{ item.quantity }} </td>
+        </tr>
+      {% endfor %}
+  </table>
 
   <form action="/" method="POST">
     <input type="submit" name="new_game" value="New Game">
