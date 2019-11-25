@@ -25,16 +25,16 @@ def index():
                 return render_template("create-character.html")
             except:
                 return 'There was an issue starting a new game!'
+        elif 'create_character' in request.form:
+            player_name = request.form['name']
+            player = Player(name=player_name)
 
-        player_name = request.form['name']
-        player = Player(name=player_name)
-
-        try:
-            db.session.add(player)
-            db.session.commit()
-            return render_template("game-interface.html")
-        except:
-            return 'There was an issue creating the player'
+            try:
+                db.session.add(player)
+                db.session.commit()
+                return render_template("game-interface.html", player=player)
+            except:
+                return 'There was an issue creating the player'
 
     current_player = Player.query.first()
     if current_player is None:
