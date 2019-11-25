@@ -26,8 +26,8 @@
       <td class="col_r">{{player.energy}}</td>
     </tr>
     <tr>
-      <td><img src="https://img.icons8.com/metro/26/000000/sword.png"> 0</td>
-      <td class="col_r"><img src="https://img.icons8.com/metro/26/000000/shield.png"> 0</td>
+      <td><img src="https://img.icons8.com/metro/26/000000/sword.png"> {{items.damage}}</td>
+      <td class="col_r"><img src="https://img.icons8.com/metro/26/000000/shield.png"> {{items.armour}}</td>
     </tr>
   </table>
 
@@ -36,7 +36,7 @@
         <th>Inventory<th>
         <th></th>
       </tr>
-      {% for item in items %}
+      {% for item in items.items %}
         <tr>
           <td class="item-name">{{ item.name }}</td>
           <td class="item-quantity">{{ item.quantity }} </td>

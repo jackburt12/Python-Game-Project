@@ -1,4 +1,5 @@
-from items import GetItem
+from items import GetItem, Weapon, Armour
+from inventory import Inventory
 from flask import Flask, render_template, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -45,7 +46,7 @@ def index():
             #whichever line it is in the csv file is what the item_id should be
             swiss = Item(item_id=1, item_type="Weapon")
             nuts = Item(item_id=1, item_type="Consumable")
-            
+
             try:
                 clear_database()
                 db.session.add(player)
@@ -70,7 +71,18 @@ def load_inventory():
         new_item.quantity = item.quantity
         items_parsed.append(new_item)
 
-    return items_parsed
+    damage = 0
+    armour = 0
+
+    for item in items_parsed:
+        if isinstance(item, Weapon):
+            if int(item.damage) > int(damage):
+                damage = item.damage
+        elif isinstance(item, Armour):
+            if int(item.protection) > int(armour):
+                armour = item.protection
+
+    return Inventory(items_parsed, damage, armour)
 
 def clear_database():
     db.session.query(Item).delete()
