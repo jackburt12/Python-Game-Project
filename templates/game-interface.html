@@ -7,4 +7,8 @@
 {% block body %}
   <h1>Python Pals</h1>
   <h2>Hello {{player.name}}</h2>
+
+  <form action="/" method="POST">
+    <input type="submit" name="new_game" value="New Game">
+  </form>
 {% endblock %}

@@ -18,6 +18,14 @@ class Player(db.Model):
 def index():
 
     if request.method=='POST':
+        if 'new_game' in request.form:
+            try:
+                db.session.delete(Player.query.first())
+                db.session.commit()
+                return render_template("create-character.html")
+            except:
+                return 'There was an issue starting a new game!'
+
         player_name = request.form['name']
         player = Player(name=player_name)
 
