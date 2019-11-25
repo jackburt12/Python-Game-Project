@@ -6,12 +6,8 @@
 
 {% block body %}
   <h1>Enter your name:</h1>
-  <form action="" method="post" novalidate>
-      {{ form.hidden_tag() }}
-      <p>
-          {{ form.name.label }}<br>
-          {{ form.name(size=32) }}
-      </p>
-      <p>{{ form.submit() }}</p>
+  <form action="/" method="POST">
+    <input type="text" name="name" id="name">
+    <input type="submit" value="Confirm">
   </form>
 {% endblock %}
