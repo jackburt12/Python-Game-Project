@@ -30,10 +30,25 @@
         </div>
       </div>
       <div class="panel" id="player">
+
+        <table id="map">
+          {% for i in range(12) %}
+
+            <tr>
+              {% for n in range(25) %}
+                  <td></td>
+              {% endfor %}
+            </tr>
+
+          {% endfor %}
+        </table>
+
+
         <table id="statistics">
           <tr>
             <th>{{player.name}}</th>
-            <th></th>
+            <th id="result">[{{player.location_x}}, {{player.location_y}}]</th>
+
           </tr>
           <tr>
             <td>Health</td>

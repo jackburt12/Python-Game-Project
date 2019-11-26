@@ -1,6 +1,6 @@
 from items import GetItem, Weapon, Armour
 from inventory import Inventory
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -14,6 +14,8 @@ class Player(db.Model):
     health = db.Column(db.Integer, default=100)
     hunger = db.Column(db.Integer, default=100)
     energy = db.Column(db.Integer, default=100)
+    location_x = db.Column(db.Integer, default=2)
+    location_y = db.Column(db.Integer, default=3)
 
     def __repr__(self):
         return '<Task %r>' % self.id
@@ -66,22 +68,39 @@ def index():
 @app.route("/north")
 def north():
     print ("Went North")
-    return "north"
+    player = Player.query.first()
+    if (player.location_y<11):
+        player.location_y = player.location_y + 1
+        db.session.commit()
+    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
 
 @app.route("/east")
 def east():
     print ("Went East")
-    return "east"
+    player = Player.query.first()
+    if (player.location_x<24):
+        player.location_x = player.location_x + 1
+        db.session.commit()
+    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
 
 @app.route("/south")
 def south():
     print ("Went South")
-    return "south"
+    player = Player.query.first()
+    if (player.location_y>0):
+        player.location_y = player.location_y - 1
+        db.session.commit()
+    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
 
 @app.route("/west")
 def west():
     print ("Went West")
-    return "west"
+    player = Player.query.first()
+    if (player.location_x>0):
+        player.location_x = player.location_x - 1
+        db.session.commit()
+    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
+
 
 def load_inventory():
     items_raw = Item.query.all()

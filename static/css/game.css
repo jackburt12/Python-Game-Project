@@ -36,6 +36,16 @@ h1 {
 text-align: center;
 }
 
+#map {
+  margin-bottom: 20px;
+}
+
+#map td{
+  border: 1px solid #555;
+  width: 20px;
+  height: 20px;
+}
+
 .compass {
   zoom: 0.5;
   -moz-transform: scale(0.5);
