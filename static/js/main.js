@@ -25,16 +25,14 @@ $(function() {
 
     $.getJSON(direction,
         function(data) {
-          var result = data.result;
-          $("#result").text(result);
-          coordinates = get_coordinates(result);
+          var location = data.location;
+          $("#hunger").text(data.hunger);
+          $("#energy").text(data.energy);
+
+          $("#location").text(location);
+          coordinates = get_coordinates(location);
           add_to_queue(coordinates);
           colour_squares();
-          // var table = document.getElementById("map");
-          // var row = table.rows[11-coordinates[1]];
-          // var cell = row.cells[coordinates[0]];
-          // console.log(cell);
-          // cell.style.backgroundColor = "red";
     });
     return false;
   });

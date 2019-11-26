@@ -25,6 +25,7 @@ h1 {
 }
 
 .col_r {
+  min-width: 75px;
   text-align: right;
 }
 

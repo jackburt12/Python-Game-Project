@@ -47,20 +47,20 @@
         <table id="statistics">
           <tr>
             <th>{{player.name}}</th>
-            <th id="result">[{{player.location_x}}, {{player.location_y}}]</th>
+            <th id="location">[{{player.location_x}}, {{player.location_y}}]</th>
 
           </tr>
           <tr>
             <td>Health</td>
-            <td class="col_r">{{player.health}}</td>
+            <td class="col_r" id="health">{{player.health}}</td>
           </tr>
           <tr>
             <td>Hunger</td>
-            <td class="col_r">{{player.hunger}}</td>
+            <td class="col_r" id="hunger">{{player.hunger}}</td>
           </tr>
           <tr>
             <td>Energy</td>
-            <td class="col_r">{{player.energy}}</td>
+            <td class="col_r" id="energy">{{player.energy}}</td>
           </tr>
           <tr>
             <td><img src="https://img.icons8.com/metro/26/000000/sword.png"> {{items.damage}}</td>

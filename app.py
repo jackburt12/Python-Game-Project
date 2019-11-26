@@ -69,38 +69,47 @@ def index():
 def north():
     print ("Went North")
     player = Player.query.first()
-    if (player.location_y<11):
+    if (player.location_y<11 and player.energy > 0):
         player.location_y = player.location_y + 1
+        moved_square()
         db.session.commit()
-    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
+        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
+    else:
+        return "nothing"
 
 @app.route("/east")
 def east():
     print ("Went East")
     player = Player.query.first()
-    if (player.location_x<24):
+    if (player.location_x<24 and player.energy > 0):
         player.location_x = player.location_x + 1
+        moved_square()
         db.session.commit()
-    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
-
+        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
+    else:
+        return "nothing"
 @app.route("/south")
 def south():
     print ("Went South")
     player = Player.query.first()
-    if (player.location_y>0):
+    if (player.location_y>0 and player.energy > 0):
         player.location_y = player.location_y - 1
+        moved_square()
         db.session.commit()
-    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
-
+        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
+    else:
+        return "nothing"
 @app.route("/west")
 def west():
     print ("Went West")
     player = Player.query.first()
-    if (player.location_x>0):
+    if (player.location_x>0 and player.energy > 0):
         player.location_x = player.location_x - 1
+        moved_square()
         db.session.commit()
-    return jsonify(result="["+str(player.location_x)+", "+str(player.location_y)+"]")
-
+        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
+    else:
+        return "nothing"
 
 def load_inventory():
     items_raw = Item.query.all()
@@ -124,6 +133,11 @@ def load_inventory():
                 armour = item.protection
 
     return Inventory(items_parsed, damage, armour)
+
+def moved_square():
+    player = Player.query.first()
+    player.hunger = player.hunger - 3
+    player.energy = player.energy - 5
 
 def clear_database():
     db.session.query(Item).delete()
