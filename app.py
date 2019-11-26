@@ -63,6 +63,26 @@ def index():
         else:
             return render_template("game-interface.html", player=current_player, items=load_inventory())
 
+@app.route("/north")
+def north():
+    print ("Went North")
+    return "north"
+
+@app.route("/east")
+def east():
+    print ("Went East")
+    return "east"
+
+@app.route("/south")
+def south():
+    print ("Went South")
+    return "south"
+
+@app.route("/west")
+def west():
+    print ("Went West")
+    return "west"
+
 def load_inventory():
     items_raw = Item.query.all()
     items_parsed = []
