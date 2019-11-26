@@ -11,7 +11,24 @@
     <br><br>
     <div id="game-window">
       <div class="panel" id="commentary"></div>
-      <div class="panel" id="actions"></div>
+      <div class="panel" id="actions">
+        <div id="compass" class="compass">
+          <div class="compass-inner">
+            <div class="direction-seg" id="north"></div>
+            <div class="direction" id="north">N</div>
+            <div class="direction-seg" id="east"></div>
+            <div class="direction" id="east">E</div>
+            <div class="direction-seg" id="south"></div>
+            <div class="direction" id="south">S</div>
+            <div class="direction-seg" id="west"></div>
+            <div class="direction" id="west">W</div>
+            <div class="main-arrow">
+              <div class="arrow-up"></div>
+              <div class="arrow-down"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="panel" id="player">
         <table id="statistics">
           <tr>
@@ -58,5 +75,8 @@
       <input type="submit" name="new_game" value="New Game">
     </form>
   </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type=text/javascript src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 {% endblock %}
