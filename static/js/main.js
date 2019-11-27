@@ -9,7 +9,11 @@ $(function() {
 
     $.getJSON(item_name, function(data) {
 
-      if(data.effect !== undefined) {
+      if(data.error !== undefined) {
+        commentate(data.error);
+      } else if(data.effect !== undefined) {
+
+
 
         $("#health").text(data.health);
         $("#hunger").text(data.hunger);

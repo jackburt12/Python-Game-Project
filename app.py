@@ -4,6 +4,7 @@ from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 MOVEMENT_ENERGY_COST = 5
+MOVEMENT_HUNGER_COST = 3
 ENERGY_MESSAGE = "You fail to muster to strength to take even one more step, best find somewhere to sleep for the night..."
 BOUNDARY_MESSAGE = "There are towering cliffs in front of you, you'll have to choose another direction..."
 
@@ -16,7 +17,7 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
     health = db.Column(db.Integer, default=100)
-    hunger = db.Column(db.Integer, default=100)
+    hunger = db.Column(db.Integer, default=81)
     energy = db.Column(db.Integer, default=100)
     location_x = db.Column(db.Integer, default=2)
     location_y = db.Column(db.Integer, default=3)
@@ -52,7 +53,7 @@ def index():
             #whichever line it is in the csv file is what the item_id should be
             swiss = Item(item_id=1, item_type="Weapon")
             nuts = Item(item_id=1, item_type="Consumable")
-
+            nuts.quantity = 3
             try:
                 clear_database()
                 db.session.add(player)
@@ -107,18 +108,42 @@ def item(item):
     used_item = select_item(item)
     if used_item.item_type == "Consumable":
         consumable = GetItem(used_item.item_type, used_item.item_id)
+
+        old_stat = 0
+        amount = 0
         print(consumable.effect)
         if consumable.effect == "Hunger":
-            print ("hunger restored by "+ consumable.amount)
-            player.hunger = player.hunger + int(consumable.amount)
-            db.session.commit()
+            if player.hunger <100:
+                old_stat = player.hunger
+                print ("hunger restored by "+ consumable.amount)
+                player.hunger = player.hunger + int(consumable.amount)
+                if player.hunger > 100:
+                    player.hunger = 100
+                db.session.commit()
+                amount = player.hunger - old_stat
         elif consumable.effect == "Health":
-            player.health = player.health + int(consumable.amount)
-            db.session.commit()
+            if player.health <100:
+                old_stat = player.health
+                print ("health restored by "+ consumable.amount)
+                player.health = player.health + int(consumable.amount)
+                if player.health > 100:
+                    player.health = 100
+                db.session.commit()
+                amount = player.health - old_stat
         elif consumable.effect == "Energy":
-            player.energy = player.energy + int(consumable.amount)
-            db.session.commit()
-        return jsonify(hunger=player.hunger, health=player.health, energy=player.energy, effect=consumable.effect, amount=consumable.amount, quantity = decrease_quantity(used_item))
+            if player.energy <100:
+                old_stat = player.energy
+                print ("energy restored by "+ consumable.amount)
+                player.energy = player.energy + int(consumable.amount)
+                if player.energy > 100:
+                    player.energy = 100
+                db.session.commit()
+                amount = player.energy - old_stat
+        if amount is 0:
+            print("Amount is 0")
+            return jsonify(error="Consumable would have no effect")
+        else:
+            return jsonify(hunger=player.hunger, health=player.health, energy=player.energy, effect=consumable.effect, amount=amount, quantity = decrease_quantity(used_item))
     else:
         return "nothing"
     #return render_template('user_popup.html', user=user)
@@ -196,6 +221,7 @@ def move_square(direction):
                 player.location_x = player.location_x - 1
 
     player.energy = player.energy - MOVEMENT_ENERGY_COST
+    player.hunger = player.hunger - MOVEMENT_HUNGER_COST
     db.session.commit()
     return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
 
