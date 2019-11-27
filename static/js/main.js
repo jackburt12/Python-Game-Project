@@ -1,7 +1,9 @@
 /**
- *  Styles the commentary list
+ *  Call this function to add a piece of commentary to the list and refresh the styling
 **/
-function update_list() {
+function commentate(commentary) {
+  $('#commentary-list').prepend($('<li>').text(commentary));
+
   var list_items = $("#commentary-list li");
   list_items.each(function(idx, li) {
     if(idx > 6) {
@@ -51,8 +53,7 @@ $(function() {
           console.log(data.error);
           if(data.error !== undefined) {
             console.log("Error");
-            $('#commentary-list').prepend($('<li>').text(data.error));
-            update_list();
+            commentate(data.error);
           } else {
 
             var location = data.location;
@@ -89,7 +90,6 @@ $(function() {
 
 $(function() {
   $('#sleep_button').bind('click', function(event) {
-    console.log("Sleeping");
 
     $('#overlay').animate({
       opacity: 1,
@@ -98,13 +98,13 @@ $(function() {
       $.getJSON("/sleep", function(data) {
 
         $("#energy").text(data.energy);
+        commentate("You awake feeling refreshed and ready to continue your adventure.");
 
       });
 
       $('#overlay').animate({
         opacity: 0,
       }, 3000, function() {
-        // faded in
       });
     });
     return false;
