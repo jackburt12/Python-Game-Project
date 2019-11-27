@@ -3,6 +3,10 @@ from inventory import Inventory
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
+MOVEMENT_ENERGY_COST = 5
+ENERGY_MESSAGE = "You fail to muster to strength to take even one more step, best find somewhere to sleep for the night..."
+BOUNDARY_MESSAGE = "There are towering cliffs in front of you, you'll have to choose another direction..."
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -73,49 +77,29 @@ def index():
 
 @app.route("/north")
 def north():
-    print ("Went North")
-    player = Player.query.first()
-    if (player.location_y<11 and player.energy > 0):
-        player.location_y = player.location_y + 1
-        moved_square()
-        db.session.commit()
-        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
-    else:
-        return "nothing"
+    return move_square("north")
 
 @app.route("/east")
 def east():
-    print ("Went East")
-    player = Player.query.first()
-    if (player.location_x<24 and player.energy > 0):
-        player.location_x = player.location_x + 1
-        moved_square()
-        db.session.commit()
-        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
-    else:
-        return "nothing"
+    return move_square("east")
+
 @app.route("/south")
 def south():
-    print ("Went South")
-    player = Player.query.first()
-    if (player.location_y>0 and player.energy > 0):
-        player.location_y = player.location_y - 1
-        moved_square()
-        db.session.commit()
-        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
-    else:
-        return "nothing"
+    return move_square("south")
+
+
 @app.route("/west")
 def west():
-    print ("Went West")
+    return move_square("west")
+
+@app.route("/sleep")
+def sleep():
     player = Player.query.first()
-    if (player.location_x>0 and player.energy > 0):
-        player.location_x = player.location_x - 1
-        moved_square()
-        db.session.commit()
-        return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
-    else:
-        return "nothing"
+    player.energy = 100
+    db.session.commit()
+
+    return jsonify(energy=player.energy)
+
 
 def load_inventory():
     items_raw = Item.query.all()
@@ -140,10 +124,41 @@ def load_inventory():
 
     return Inventory(items_parsed, damage, armour)
 
-def moved_square():
+def move_square(direction):
     player = Player.query.first()
-    player.hunger = player.hunger - 3
-    player.energy = player.energy - 5
+
+    if player.energy < MOVEMENT_ENERGY_COST:
+        return jsonify(error=ENERGY_MESSAGE)
+
+    else:
+        if direction is 'north':
+            if (player.location_y>=11):
+                #player reached bound
+                return jsonify(error=BOUNDARY_MESSAGE)
+            else:
+                player.location_y = player.location_y + 1
+
+        elif direction is 'east':
+            if (player.location_x>=24):
+                return jsonify(error=BOUNDARY_MESSAGE)
+            else:
+                player.location_x = player.location_x + 1
+
+        elif direction is 'south':
+            if (player.location_y<= 0):
+                return jsonify(error=BOUNDARY_MESSAGE)
+            else:
+                player.location_y = player.location_y - 1
+
+        elif direction is 'west':
+            if (player.location_x<=0):
+                return jsonify(error=BOUNDARY_MESSAGE)
+            else:
+                player.location_x = player.location_x - 1
+
+    player.energy = player.energy - MOVEMENT_ENERGY_COST
+    db.session.commit()
+    return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
 
 def clear_database():
     db.session.query(Item).delete()

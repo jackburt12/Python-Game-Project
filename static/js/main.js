@@ -1,4 +1,21 @@
 /**
+ *  Styles the commentary list
+**/
+function update_list() {
+  var list_items = $("#commentary-list li");
+  list_items.each(function(idx, li) {
+    if(idx > 6) {
+      li.remove();
+    } else {
+      li.style.opacity = 1-idx*0.15;
+    }
+  });
+}
+
+
+
+
+/**
  *  Simply moved the compas needle towards the mouse on hover
  *  Offers no funcitonality except astheitic.
 **/
@@ -14,6 +31,11 @@ $(compass).on( "mousemove", function(event) {
     arrow.css({ 'transform': 'rotate(' + angle + 'deg)'});
 });
 
+/**
+ *  This is the JS which deals with player movement.
+ *  This includes the visible functionality of the map as well as the backend communication.
+**/
+
 recent_squares = [];
 starting_square = null;
 clear_square = null;
@@ -26,32 +48,72 @@ $(function() {
 
     $.getJSON(direction,
         function(data) {
-          var location = data.location;
-          $("#hunger").text(data.hunger);
-          $("#energy").text(data.energy);
+          console.log(data.error);
+          if(data.error !== undefined) {
+            console.log("Error");
+            $('#commentary-list').prepend($('<li>').text(data.error));
+            update_list();
+          } else {
 
-          if(starting_square == null) {
-            console.log("First step");
+            var location = data.location;
+            $("#hunger").text(data.hunger);
+            $("#energy").text(data.energy);
 
-            var starting_row = $("#starting_square").closest("tr").index();
-            var starting_col = $("#starting_square").closest("td").index();
-            console.log(starting_row);
-            console.log(starting_col);
+            if(starting_square == null) {
 
-            starting_square = [starting_col, starting_row];
-            add_to_queue(starting_square);
+              var starting_row = 11 - $("#starting_square").closest("tr").index();
+              var starting_col = $("#starting_square").closest("td").index();
+              console.log(starting_row);
+              console.log(starting_col);
 
+              starting_square = [starting_col, starting_row];
+              add_to_queue(starting_square);
+
+            }
+
+            $("#location").text(location);
+            coordinates = get_coordinates(location);
+            add_to_queue(coordinates);
+
+            colour_squares();
           }
-
-          $("#location").text(location);
-          coordinates = get_coordinates(location);
-          add_to_queue(coordinates);
-
-          colour_squares();
     });
     return false;
   });
 });
+
+/**
+ *  This is the JS which deals with player sleeping.
+ *  This includes the visible functionality as well as the backend communication.
+**/
+
+$(function() {
+  $('#sleep_button').bind('click', function(event) {
+    console.log("Sleeping");
+
+    $('#overlay').animate({
+      opacity: 1,
+    }, 1500, function() {
+      //faded out
+      $.getJSON("/sleep", function(data) {
+
+        $("#energy").text(data.energy);
+
+      });
+
+      $('#overlay').animate({
+        opacity: 0,
+      }, 3000, function() {
+        // faded in
+      });
+    });
+    return false;
+  });
+});
+
+/**
+ *  Below here are useful functions used for the rest of the JS funcitonality.
+**/
 
 function get_coordinates(result) {
   result = result.replace('\]','');
@@ -88,7 +150,5 @@ function colour_squares() {
     opacity = (((i * 2 + 2)/10) + (5-recent_squares.length) * 0.2).toString();
     cell.style.opacity = opacity;
   }
-
-
 
 }
