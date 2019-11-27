@@ -220,10 +220,15 @@ def move_square(direction):
             else:
                 player.location_x = player.location_x - 1
 
+    starving = "false"
     player.energy = player.energy - MOVEMENT_ENERGY_COST
     player.hunger = player.hunger - MOVEMENT_HUNGER_COST
+    if player.hunger < 0:
+        player.hunger = 0
+        player.health = player.health - 2
+        starving = "true"
     db.session.commit()
-    return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy)
+    return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy, starving=starving)
 
 def clear_database():
     db.session.query(Item).delete()

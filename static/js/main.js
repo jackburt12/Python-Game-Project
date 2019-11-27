@@ -81,6 +81,10 @@ $(function() {
             $("#hunger").text(data.hunger);
             $("#energy").text(data.energy);
 
+            if(data.starving == "true") {
+              commentate("If you don't eat something soon you won't last much longer...")
+            }
+
             if(starting_square == null) {
 
               var starting_row = 11 - $("#starting_square").closest("tr").index();
