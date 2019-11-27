@@ -1,24 +1,38 @@
 /**
- *  Call this function to add a piece of commentary to the list and refresh the styling
+ *  Simply moved the compas needle towards the mouse on hover
+ *  Offers no funcitonality except astheitic.
 **/
-function commentate(commentary) {
-  $('#commentary-list').prepend($('<li>').text(commentary));
+$(function() {
+  $('.item-name').bind('click', function(event) {
 
-  var list_items = $("#commentary-list li");
-  list_items.each(function(idx, li) {
-    if(idx > 6) {
-      li.remove();
-    } else {
-      li.style.opacity = 1-idx*0.15;
-    }
+    var item_name = '/item/' + event.target.text;
+
+    $.getJSON(item_name, function(data) {
+
+      if(data.effect !== undefined) {
+
+        $("#health").text(data.health);
+        $("#hunger").text(data.hunger);
+        $("#energy").text(data.energy);
+
+        commentate(data.effect + " increased by " + data.amount);
+
+        var row = event.target.parentElement.parentElement;
+
+        if(data.quantity <= 0) {
+          row.remove();
+        }
+
+        var quantity = row.childNodes[3];
+        quantity.innerHTML = data.quantity;
+      }
+
+
+    });
+
+
   });
-}
-
-// $(document).ready(function(){
-//   console.log("ready");
-//     $('[data-toggle="popover"]').popover();
-// });
-
+});
 
 /**
  *  Simply moved the compas needle towards the mouse on hover
@@ -154,4 +168,20 @@ function colour_squares() {
     cell.style.opacity = opacity;
   }
 
+}
+
+/**
+ *  Call this function to add a piece of commentary to the list and refresh the styling
+**/
+function commentate(commentary) {
+  $('#commentary-list').prepend($('<li>').text(commentary));
+
+  var list_items = $("#commentary-list li");
+  list_items.each(function(idx, li) {
+    if(idx > 6) {
+      li.remove();
+    } else {
+      li.style.opacity = 1-idx*0.15;
+    }
+  });
 }

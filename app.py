@@ -1,4 +1,4 @@
-from items import GetItem, Weapon, Armour
+from items import GetItem, Weapon, Armour, Consumable
 from inventory import Inventory
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -100,6 +100,29 @@ def sleep():
 
     return jsonify(energy=player.energy)
 
+@app.route("/item/<item>")
+def item(item):
+    player = Player.query.first()
+
+    used_item = select_item(item)
+    if used_item.item_type == "Consumable":
+        consumable = GetItem(used_item.item_type, used_item.item_id)
+        print(consumable.effect)
+        if consumable.effect == "Hunger":
+            print ("hunger restored by "+ consumable.amount)
+            player.hunger = player.hunger + int(consumable.amount)
+            db.session.commit()
+        elif consumable.effect == "Health":
+            player.health = player.health + int(consumable.amount)
+            db.session.commit()
+        elif consumable.effect == "Energy":
+            player.energy = player.energy + int(consumable.amount)
+            db.session.commit()
+        return jsonify(hunger=player.hunger, health=player.health, energy=player.energy, effect=consumable.effect, amount=consumable.amount, quantity = decrease_quantity(used_item))
+    else:
+        return "nothing"
+    #return render_template('user_popup.html', user=user)
+
 
 def load_inventory():
     items_raw = Item.query.all()
@@ -123,6 +146,22 @@ def load_inventory():
                 armour = item.protection
 
     return Inventory(items_parsed, damage, armour)
+
+def select_item(item_name):
+    items_raw = Item.query.all()
+    for item in items_raw:
+        new_item = GetItem(item.item_type, item.item_id)
+        if new_item.name == item_name:
+            return item
+
+
+def decrease_quantity(item):
+    item.quantity = item.quantity-1
+    if item.quantity <= 0:
+        db.session.delete(item)
+    db.session.commit()
+    return item.quantity
+
 
 def move_square(direction):
     player = Player.query.first()
