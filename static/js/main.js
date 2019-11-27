@@ -15,6 +15,7 @@ $(compass).on( "mousemove", function(event) {
 });
 
 recent_squares = [];
+starting_square = null;
 clear_square = null;
 
 $(function() {
@@ -29,9 +30,23 @@ $(function() {
           $("#hunger").text(data.hunger);
           $("#energy").text(data.energy);
 
+          if(starting_square == null) {
+            console.log("First step");
+
+            var starting_row = $("#starting_square").closest("tr").index();
+            var starting_col = $("#starting_square").closest("td").index();
+            console.log(starting_row);
+            console.log(starting_col);
+
+            starting_square = [starting_col, starting_row];
+            add_to_queue(starting_square);
+
+          }
+
           $("#location").text(location);
           coordinates = get_coordinates(location);
           add_to_queue(coordinates);
+
           colour_squares();
     });
     return false;

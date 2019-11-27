@@ -28,17 +28,35 @@
             </div>
           </div>
         </div>
+        <form id="sleep-button" action="/" method="POST">
+          <input type="submit" name="sleep" value="Sleep">
+        </form>
       </div>
       <div class="panel" id="player">
 
         <table id="map">
           {% for i in range(12) %}
+            {% if (11-i) == player.location_y %}
 
-            <tr>
               {% for n in range(25) %}
+                {% if n == player.location_x %}
+                  <td id="starting_square" style="background:red;"></td>
+                {% else %}
                   <td></td>
+                {% endif %}
               {% endfor %}
-            </tr>
+
+            {% else %}
+
+              <tr>
+                {% for n in range(25) %}
+                    <td></td>
+                {% endfor %}
+              </tr>
+
+            {% endif %}
+
+
 
           {% endfor %}
         </table>

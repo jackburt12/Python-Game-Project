@@ -58,6 +58,12 @@ def index():
                 return render_template("game-interface.html", player=player, items=load_inventory())
             except:
                 return 'There was an issue creating the player'
+        elif 'sleep' in request.form:
+            current_player = Player.query.first()
+            current_player.energy = 100
+            db.session.commit()
+            return render_template("game-interface.html", player=current_player, items=load_inventory())
+
     else:
         current_player = Player.query.first()
         if current_player is None:
