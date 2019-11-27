@@ -14,7 +14,10 @@ function commentate(commentary) {
   });
 }
 
-
+// $(document).ready(function(){
+//   console.log("ready");
+//     $('[data-toggle="popover"]').popover();
+// });
 
 
 /**

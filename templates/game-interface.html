@@ -96,7 +96,8 @@
             </tr>
             {% for item in items.items %}
               <tr>
-                <td class="item-name">{{ item.name }}</td>
+
+                <td class="item-name"><a href="#" data-trigger="hover" data-toggle="popover" title="{{ item.name }}" data-content="{{ item.description }}" data-html="true">{{ item.name }}</a></td>
                 <td class="item-quantity">{{ item.quantity }} </td>
               </tr>
             {% endfor %}
@@ -113,6 +114,14 @@
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+  $(document).ready(function(){
+  $('[data-toggle="popover"]').popover();
+  });
+  </script>
+
   <script type=text/javascript src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 {% endblock %}
