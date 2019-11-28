@@ -42,21 +42,23 @@ def GetItem(item_type, item_id):
     with open(file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
-        for row in csv_reader:
-            name = row[0]
-            print(name, flush=True)
+        rows = list(csv_reader)
 
-            description = row[1]
-            value = row[2]
+        row = rows[int(item_id)-1]
 
-            if item_type == "Weapon":
-                damage = row[3]
-                return Weapon(name, description, value, damage)
-            elif item_type == "Armour":
-                protection = row[3]
-                return Armour(name, description, value, protection)
+        name = row[0]
 
-            elif item_type == "Consumable":
-                effect = row[3]
-                amount = row[4]
-                return Consumable(name, description, value, effect, amount)
+        description = row[1]
+        value = row[2]
+
+        if item_type == "Weapon":
+            damage = row[3]
+            return Weapon(name, description, value, damage)
+        elif item_type == "Armour":
+            protection = row[3]
+            return Armour(name, description, value, protection)
+
+        elif item_type == "Consumable":
+            effect = row[3]
+            amount = row[4]
+            return Consumable(name, description, value, effect, amount)
