@@ -32,6 +32,9 @@
           </div>
         </div>
         <form onsubmit="return false;">
+          <input id="scavenge_button" type="submit" value="Scavenge for Materials">
+        </form>
+        <form onsubmit="return false;">
           <input id="sleep_button" type="submit" value="Sleep">
         </form>
       </div>
@@ -96,7 +99,7 @@
             </tr>
             {% for item in items.items %}
               <tr>
-                <td class="item-name"><a href="#" data-trigger="hover" data-toggle="popover" title="{{ item.name }}" data-content="{{ item.description }}" data-html="true">{{ item.name }}</a></td>
+                <td class="item-name"><a href="" data-trigger="hover" data-toggle="popover" title="{{ item.name }}" data-content="{{ item.description }}" data-html="true">{{ item.name }}</a></td>
                 <td class="item-quantity">{{ item.quantity }} </td>
               </tr>
             {% endfor %}

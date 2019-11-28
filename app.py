@@ -1,11 +1,13 @@
 from items import GetItem, Weapon, Armour, Consumable
 from inventory import Inventory
+from scavenge import FoundItem, Scavenge
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 #global variables
 MOVEMENT_ENERGY_COST = 5
 MOVEMENT_HUNGER_COST = 3
+SCAVENGE_ENERGY_COST = 7
 ENERGY_MESSAGE = "You fail to muster to strength to take even one more step, best find somewhere to sleep for the night..."
 BOUNDARY_MESSAGE = "There are towering cliffs in front of you, you'll have to choose another direction..."
 
@@ -114,6 +116,25 @@ def sleep():
     db.session.commit()
     return jsonify(energy=player.energy)
 
+#if the player presses the scavenge button this route will run
+@app.route("/scavenge")
+def scavenge():
+    player = Player.query.first()
+
+    if player.energy - SCAVENGE_ENERGY_COST > 0:
+        player.energy = player.energy-SCAVENGE_ENERGY_COST
+
+        items = Scavenge(5)
+        items_parsed = []
+
+        for item in items:
+            add_item(item.item_id, item.item_type)
+            parsed_item = GetItem(item.item_type, item.item_id)
+            items_parsed.append(parsed_item.name)
+        return jsonify(result=items_parsed)
+    else:
+        return jsonify(error="You're too tired to scavenge for anything else")
+
 #if the player selects any item in their inventory this route will run with (item) as a param
 @app.route("/item/<item>")
 def item(item):
@@ -183,7 +204,10 @@ def load_inventory():
     #for example an item stored as item_id=1, item_type=Consumable would be converted
     #into a Consumable() object with a name = "Bag of Nuts", description, etc.
     for item in items_raw:
+        print("Item type:" + item.item_type)
+        print("Item id:" + item.item_id)
         new_item = GetItem(item.item_type, item.item_id)
+        print(new_item)
         new_item.quantity = item.quantity
         items_parsed.append(new_item)
 

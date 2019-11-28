@@ -41,7 +41,6 @@ def GetItem(item_type, item_id):
 
     with open(file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
-        line_count = 0
         rows = list(csv_reader)
 
         row = rows[int(item_id)-1]
@@ -62,3 +61,6 @@ def GetItem(item_type, item_id):
             effect = row[3]
             amount = row[4]
             return Consumable(name, description, value, effect, amount)
+
+        else:
+            return Item(name, description, value)

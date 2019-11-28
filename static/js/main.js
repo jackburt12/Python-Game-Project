@@ -1,6 +1,5 @@
 /**
- *  Simply moved the compas needle towards the mouse on hover
- *  Offers no funcitonality except astheitic.
+ *  Deals with item usage
 **/
 $(function() {
   $('.item-name').bind('click', function(event) {
@@ -12,8 +11,6 @@ $(function() {
       if(data.error !== undefined) {
         commentate(data.error);
       } else if(data.effect !== undefined) {
-
-
 
         $("#health").text(data.health);
         $("#hunger").text(data.hunger);
@@ -109,6 +106,62 @@ $(function() {
     return false;
   });
 });
+
+
+/**
+ *  This is the JS which deals with player scavenging.
+**/
+$(function() {
+  $('#scavenge_button').bind('click', function(event) {
+
+    $.getJSON("/scavenge", function(data) {
+
+      if(data.error !== undefined) {
+        commentate(data.error);
+      } else {
+        //disable button for 30 seconds
+        var btn = $('#scavenge_button');
+        btn.prop('disabled', true);
+        setTimeout(function(){
+          btn.prop('disabled', false);
+        },30000);
+
+        commentate("You search your local area for anything that might be of use");
+
+        var items = data.result;
+
+        var counts = {};
+
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          counts[item] = counts[item] ? counts[item] + 1 : 1;
+        }
+
+        commentate_string = "You found "
+
+        const keys = Object.keys(counts)
+        for (const key of keys) {
+          console.log($(".item-name:contains("+key+")"));
+          if($(".item-name:contains("+key+")").length === 0) {
+            $("#inventory tr:last").after("<tr><td class=\"item-name\">"+key+"</td><td class=\"item-quantity\">"+counts[key]+"</td></tr>")
+          } else {
+            $(".item-name:contains("+key+")").next().html(parseInt($(".item-name:contains("+key+")").next().html())+parseInt(counts[key]));
+          }
+
+          commentate_string=commentate_string + counts[key] + "x" + key + ", ";
+
+        }
+
+        commentate(commentate_string);
+
+        //console.log(counts["Wood"]);
+
+      }
+    });
+  });
+});
+
+
 
 /**
  *  This is the JS which deals with player sleeping.
