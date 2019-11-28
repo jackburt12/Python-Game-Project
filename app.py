@@ -262,7 +262,7 @@ def move_square(direction):
         player.health = player.health - 2
         starving = "true"
     db.session.commit()
-    return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy, starving=starving)
+    return jsonify(location="["+str(player.location_x)+", "+str(player.location_y)+"]", hunger=player.hunger, energy=player.energy, health=player.health, starving=starving)
 
 #adds an item to the database given its id and type
 def add_item(item_id, item_type):

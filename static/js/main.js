@@ -24,16 +24,17 @@ $(function() {
         var row = event.target.parentElement.parentElement;
 
         if(data.quantity <= 0) {
+          $("[data-toggle='popover']").popover('hide');
           row.remove();
         }
 
         var quantity = row.childNodes[3];
         quantity.innerHTML = data.quantity;
+
       }
 
 
     });
-
 
   });
 });
@@ -82,6 +83,7 @@ $(function() {
             $("#energy").text(data.energy);
 
             if(data.starving == "true") {
+              $("#health").text(data.health);
               commentate("If you don't eat something soon you won't last much longer...")
             }
 
