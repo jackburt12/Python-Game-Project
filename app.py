@@ -1,4 +1,4 @@
-from items import GetItem, Weapon, Armour, Consumable
+from items import GetItem, Weapon, Armour, Consumable, Item
 from inventory import Inventory
 from scavenge import FoundItem, Scavenge
 from flask import Flask, render_template, url_for, request, redirect, jsonify
@@ -8,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 MOVEMENT_ENERGY_COST = 5
 MOVEMENT_HUNGER_COST = 3
 SCAVENGE_ENERGY_COST = 7
+DAMAGE = 0
+PROTECTION = 0
 ENERGY_MESSAGE = "You fail to muster to strength to take even one more step, best find somewhere to sleep for the night..."
 BOUNDARY_MESSAGE = "There are towering cliffs in front of you, you'll have to choose another direction..."
 
@@ -62,6 +64,10 @@ def index():
             try:
                 #clear the database just to check a new character is being created
                 clear_database()
+                global DAMAGE
+                global PROTECTION
+                DAMAGE=0
+                PROTECTION=0
 
                 #add any items you want the player to start with here:
                 add_item(1, "Weapon")
@@ -130,8 +136,9 @@ def scavenge():
         for item in items:
             add_item(item.item_id, item.item_type)
             parsed_item = GetItem(item.item_type, item.item_id)
-            items_parsed.append(parsed_item.name)
-        return jsonify(result=items_parsed)
+            items_parsed.append(parsed_item)
+
+        return jsonify(result=[obj.serialize() for obj in items_parsed], energy=player.energy, damage=DAMAGE, protection=PROTECTION)
     else:
         return jsonify(error="You're too tired to scavenge for anything else")
 
@@ -204,26 +211,23 @@ def load_inventory():
     #for example an item stored as item_id=1, item_type=Consumable would be converted
     #into a Consumable() object with a name = "Bag of Nuts", description, etc.
     for item in items_raw:
-        print("Item type:" + item.item_type)
-        print("Item id:" + item.item_id)
         new_item = GetItem(item.item_type, item.item_id)
-        print(new_item)
         new_item.quantity = item.quantity
         items_parsed.append(new_item)
 
     #checks for the weapon and armour with the highest values
-    #the value will be stored as the player's protection and damage ratings
-    damage = 0
-    armour = 0
+    #the value will be stored as the player's global protection and damage ratings
+    global DAMAGE
+    global PROTECTION
     for item in items_parsed:
         if isinstance(item, Weapon):
-            if int(item.damage) > int(damage):
-                damage = item.damage
+            if int(item.damage) > int(DAMAGE):
+                DAMAGE = item.damage
         elif isinstance(item, Armour):
-            if int(item.protection) > int(armour):
-                armour = item.protection
+            if int(item.protection) > int(PROTECTION):
+                PROTECTION = item.protection
 
-    return Inventory(items_parsed, damage, armour)
+    return Inventory(items_parsed, DAMAGE, PROTECTION)
 
 #parses a database item from an item name
 #basically loops through inventory database and checks each item's name against the input param
@@ -304,6 +308,7 @@ def add_item(item_id, item_type):
     new_item = Item(item_id=item_id, item_type=item_type)
     db.session.add(new_item)
     db.session.commit()
+    load_inventory()
 
 #completely clear the database of any items or players
 def clear_database():

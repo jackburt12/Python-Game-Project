@@ -11,21 +11,58 @@ class Item():
         self.value = value
         quantity = 1
 
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'value': self.value,
+            'quantity': self.quantity
+        }
+
 class Weapon(Item):
     def __init__(self, name, description, value, damage):
         self.damage = damage
         super().__init__(name, description, value)
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'value': self.value,
+            'quantity': self.quantity,
+            'damage': self.damage
+        }
 
 class Armour(Item):
     def __init__(self, name, description, value, protection):
         self.protection = protection
         super().__init__(name, description, value)
 
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'value': self.value,
+            'quantity': self.quantity,
+            'protection': self.protection
+        }
+
 class Consumable(Item):
     def __init__(self, name, description, value, effect, amount):
         self.effect = effect
         self.amount = amount
         super().__init__(name, description, value)
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'value': self.value,
+            'quantity': self.quantity,
+            'effect': self.effect,
+            'amount': self.amount
+
+        }
 
 def GetItem(item_type, item_id):
     file = ""

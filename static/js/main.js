@@ -65,13 +65,10 @@ $(function() {
   $('.direction-seg').bind('click', function(event) {
 
     var direction = '/' + event.target.id;
-    console.log(direction);
 
     $.getJSON(direction,
         function(data) {
-          console.log(data.error);
           if(data.error !== undefined) {
-            console.log("Error");
             commentate(data.error);
           } else {
 
@@ -88,8 +85,6 @@ $(function() {
 
               var starting_row = 11 - $("#starting_square").closest("tr").index();
               var starting_col = $("#starting_square").closest("td").index();
-              console.log(starting_row);
-              console.log(starting_col);
 
               starting_square = [starting_col, starting_row];
               add_to_queue(starting_square);
@@ -124,37 +119,26 @@ $(function() {
         btn.prop('disabled', true);
         setTimeout(function(){
           btn.prop('disabled', false);
-        },30000);
+        },300);
 
         commentate("You search your local area for anything that might be of use");
 
         var items = data.result;
 
-        var counts = {};
-
         for (var i = 0; i < items.length; i++) {
-          var item = items[i];
-          counts[item] = counts[item] ? counts[item] + 1 : 1;
+          item = items[i]
+
+          if($(".item-name:contains("+item.name+")").length === 0) {
+              $("#inventory tr:last").after("<tr><td class=\"item-name\">" +  "<a href=\"\" data-trigger=\"hover\" data-toggle=\"popover\" title=\""+ item.name +"\" data-content=\""+ item.description +"\" data-html=\"true\">"+item.name+"</a></td><td class=\"item-quantity\">1</td></tr>")
+            } else {
+              $(".item-name:contains("+item.name+")").next().html(parseInt($(".item-name:contains("+item.name+")").next().html())+1);
+            }
         }
 
-        commentate_string = "You found "
+        $("#energy").text = data.energy;
+        $("#damage").text(data.damage);
 
-        const keys = Object.keys(counts)
-        for (const key of keys) {
-          console.log($(".item-name:contains("+key+")"));
-          if($(".item-name:contains("+key+")").length === 0) {
-            $("#inventory tr:last").after("<tr><td class=\"item-name\">"+key+"</td><td class=\"item-quantity\">"+counts[key]+"</td></tr>")
-          } else {
-            $(".item-name:contains("+key+")").next().html(parseInt($(".item-name:contains("+key+")").next().html())+parseInt(counts[key]));
-          }
-
-          commentate_string=commentate_string + counts[key] + "x" + key + ", ";
-
-        }
-
-        commentate(commentate_string);
-
-        //console.log(counts["Wood"]);
+        $('[data-toggle="popover"]').popover();
 
       }
     });
