@@ -145,6 +145,9 @@ def scavenge():
 #if the player selects any item in their inventory this route will run with (item) as a param
 @app.route("/item/<item>")
 def item(item):
+
+    print("ROUTE" + item)
+
     player = Player.query.first()
 
     #figures out what the item that has been selected is

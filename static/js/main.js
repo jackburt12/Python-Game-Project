@@ -5,6 +5,7 @@ $(function() {
   $('.item-name').bind('click', function(event) {
 
     var item_name = '/item/' + event.target.text;
+    console.log(item_name);
 
     $.getJSON(item_name, function(data) {
 
@@ -119,7 +120,7 @@ $(function() {
         btn.prop('disabled', true);
         setTimeout(function(){
           btn.prop('disabled', false);
-        },300);
+        },30000);
 
         commentate("You search your local area for anything that might be of use");
 
@@ -129,14 +130,15 @@ $(function() {
           item = items[i]
 
           if($(".item-name:contains("+item.name+")").length === 0) {
-              $("#inventory tr:last").after("<tr><td class=\"item-name\">" +  "<a href=\"\" data-trigger=\"hover\" data-toggle=\"popover\" title=\""+ item.name +"\" data-content=\""+ item.description +"\" data-html=\"true\">"+item.name+"</a></td><td class=\"item-quantity\">1</td></tr>")
+              $("#inventory tr:last").after("<tr><td class=\"item-name\">" +  "<a data-trigger=\"hover\" data-toggle=\"popover\" title=\""+ item.name +"\" data-content=\""+ item.description +"\" data-html=\"true\">"+item.name+"</a></td><td class=\"item-quantity\">1</td></tr>")
             } else {
               $(".item-name:contains("+item.name+")").next().html(parseInt($(".item-name:contains("+item.name+")").next().html())+1);
             }
         }
 
-        $("#energy").text = data.energy;
+        $("#energy").text(data.energy);
         $("#damage").text(data.damage);
+        $("#protection").text(data.protection);
 
         $('[data-toggle="popover"]').popover();
 
