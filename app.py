@@ -1,6 +1,7 @@
 from items import GetItem, Weapon, Armour, Consumable, Item
 from inventory import Inventory
 from scavenge import FoundItem, Scavenge
+from crafting import CraftingMaterial, Recipe, GetRecipe, GetAllRecipes
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
@@ -79,7 +80,7 @@ def index():
                 #add the player to the database
                 db.session.add(player)
                 db.session.commit()
-                return render_template("game-interface.html", player=player, items=load_inventory())
+                return render_template("game-interface.html", player=player, items=load_inventory(), crafting = populate_crafting())
             except:
                 return 'There was an issue creating the player'
 
@@ -89,7 +90,7 @@ def index():
         if current_player is None:
             return render_template("create-character.html")
         else:
-            return render_template("game-interface.html", player=current_player, items=load_inventory())
+            return render_template("game-interface.html", player=current_player, items=load_inventory(), crafting = populate_crafting())
 
 #the following are all of the routes for moving due to the player having pressed a
 #direction on the compass. They simply all call the move_square method with the relevant direciton
@@ -138,15 +139,13 @@ def scavenge():
             parsed_item = GetItem(item.item_type, item.item_id)
             items_parsed.append(parsed_item)
 
-        return jsonify(result=[obj.serialize() for obj in items_parsed], energy=player.energy, damage=DAMAGE, protection=PROTECTION)
+        return jsonify(result=[obj.serialize() for obj in items_parsed], energy=player.energy, damage=DAMAGE, protection=PROTECTION, crafting = [obj.serialize() for obj in populate_crafting()])
     else:
         return jsonify(error="You're too tired to scavenge for anything else")
 
 #if the player selects any item in their inventory this route will run with (item) as a param
 @app.route("/item/<item>")
 def item(item):
-
-    print("ROUTE" + item)
 
     player = Player.query.first()
 
@@ -198,12 +197,46 @@ def item(item):
         if amount is 0:
             return jsonify(error="Consumable would have no effect")
         else:
-            return jsonify(hunger=player.hunger, health=player.health, energy=player.energy, effect=consumable.effect, amount=amount, quantity = decrease_quantity(used_item))
+            return jsonify(hunger=player.hunger, health=player.health, energy=player.energy, effect=consumable.effect, amount=amount, quantity = decrease_quantity(used_item),  crafting = [obj.serialize() for obj in populate_crafting()])
 
     #currently only consumables can be used
     #could check here to see if weapons/armour/materials are used if needed
     else:
         return "nothing"
+
+#if the player tries to craft an item this route will run with (item) as a param
+@app.route("/craft/<item>")
+def craft(item):
+
+    item_recipe = None
+
+    recipes = GetAllRecipes()
+
+    for recipe in recipes:
+        if GetItem(recipe.item_type, recipe.item_id).name == item:
+            item_recipe = recipe
+            break
+
+    insufficient_mats = False
+    for material in item_recipe.materials:
+        if int(material.quantity) > select_item(GetItem(material.item_type, material.item_id).name).quantity:
+            insufficient_mats = True
+            break
+
+    if insufficient_mats == True:
+        return jsonify(error="Insufficient materials to craft " + GetItem(recipe.item_type, recipe.item_id))
+    else:
+        materials_used = []
+
+        for material in item_recipe.materials:
+            select_item(GetItem(material.item_type, material.item_id).name).quantity = select_item(GetItem(material.item_type, material.item_id).name).quantity - int(material.quantity) + 1
+            quantity = decrease_quantity(select_item(GetItem(material.item_type, material.item_id).name))
+            item = GetItem(material.item_type, material.item_id)
+            item.quantity = quantity
+            materials_used.append(item)
+
+        add_item(recipe.item_id, recipe.item_type)
+        return jsonify(materials_used=[obj.serialize() for obj in materials_used], item_crafted = GetItem(recipe.item_type, recipe.item_id).serialize(), crafting = [obj.serialize() for obj in populate_crafting()], damage=DAMAGE, protection=PROTECTION)
 
 #this method is called upon the game starting up in items=load_inventory() when returning the template
 def load_inventory():
@@ -235,6 +268,7 @@ def load_inventory():
 #parses a database item from an item name
 #basically loops through inventory database and checks each item's name against the input param
 def select_item(item_name):
+
     items_raw = Item.query.all()
     for item in items_raw:
         new_item = GetItem(item.item_type, item.item_id)
@@ -312,6 +346,30 @@ def add_item(item_id, item_type):
     db.session.add(new_item)
     db.session.commit()
     load_inventory()
+
+def populate_crafting():
+    final_recipes = []
+
+    recipes = GetAllRecipes()
+    items = Item.query.all()
+
+    for recipe in recipes:
+        broken = False
+        for material in recipe.materials:
+            hasOneOf=False
+            for item in items:
+                if item.item_id == material.item_id and item.item_type == material.item_type:
+                    hasOneOf = True
+            if hasOneOf == False:
+                broken = True
+                break
+        if broken == True:
+            break
+        else:
+            final_recipes.append(recipe)
+
+    return final_recipes
+
 
 #completely clear the database of any items or players
 def clear_database():

@@ -31,6 +31,25 @@
             </div>
           </div>
         </div>
+        <table id="crafting">
+          <thead>
+            <tr>
+              <th>Crafting<th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in crafting %}
+              {% set materials = namespace(value='') %}
+              {% for material in item.materials %}
+                {% set materials.value = materials.value ~ material.quantity ~ 'x ' ~ material.item_name ~ '<br>' %}
+              {% endfor %}
+              {% set materials.value = materials.value ~ '<br>' %}
+              <tr>
+                <td class="item-to-craft"><a class="item-name-craft" data-trigger="hover" data-toggle="popover" title="{{ item.item.name }}" data-content="<b>Cost to craft:</b><br>{{ materials.value|safe }}{{ item.item.description }}" data-html="true">{{item.item.name}}</a><td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
         <form onsubmit="return false;">
           <input id="scavenge_button" type="submit" value="Scavenge for Materials">
         </form>
